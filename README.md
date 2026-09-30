@@ -6,6 +6,7 @@ A Three.js viewer for acrylic shikishi (亚克力色纸) boards that shows how 1
 npm install
 npm run dev      # http://localhost:5173
 npm run build    # static build in dist/
+npm test         # i18n checks (node --test)
 ```
 
 ## Features
@@ -14,12 +15,14 @@ npm run build    # static build in dist/
 - **Compare grid** (`C`): all 10 films side by side under the same light. Click a board to open it.
 - Upload an image or drop one anywhere; it is cover-fitted to the board.
 - Size presets (色紙 242×273, Mini, Square, A5) and acrylic thicknesses (3, 5, 8, 10 mm).
+- **English / 中文 UI**: the whole UI shows one language at a time, switched from the language menu in the top-right. The choice is remembered and defaults to the browser language.
 - Automatic tilt and light sweep (`Space` pauses), an optional light that follows the cursor, and a film-strength slider.
 
 ## Code map
 | File | Purpose |
 |---|---|
-| `src/films.js` | Film catalogue (names, descriptions, specs, acrylic reflection settings) |
+| `src/films.js` | Film catalogue (names, descriptions and specs as `{ en, zh }` records, acrylic reflection settings) |
+| `src/i18n.js` | UI strings per language, `t()` / `loc()` lookups, language switching |
 | `src/filmShader.js` | Film surface shader (premultiplied: additive light plus haze alpha) |
 | `src/board.js` | Board geometry, layer stack, explode animation, labels |
 | `src/art.js` | Procedural sample artwork, image loading, cover fit |
