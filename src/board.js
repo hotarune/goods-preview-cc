@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { createFilmMaterial } from './filmShader.js';
 import { FILMS } from './films.js';
+import { t, loc } from './i18n.js';
 
 // 1 world unit = 10 mm.
 const MM = 0.1;
@@ -188,11 +189,11 @@ export class Board {
     if (!this.withLabels || !this.tMM) return;
     const f = FILMS[this.filmId];
     const info = [
-      [`${f.en} film · ${f.cn}`, f.spec],
-      ['Clear acrylic', `Cast PMMA · ${this.tMM} mm`],
-      ['Printed ink', 'UV CMYK, reverse printed · 12 µm'],
-      ['White underbase', 'UV white ink · 8 µm'],
-      ['Backing sheet', 'Protective PET · 50 µm'],
+      [t('layer.film', { name: loc(f.name) }), loc(f.spec)],
+      [t('layer.acrylic'), t('layer.acrylicSpec', { t: this.tMM })],
+      [t('layer.print'), t('layer.printSpec')],
+      [t('layer.base'), t('layer.baseSpec')],
+      [t('layer.back'), t('layer.backSpec')],
     ];
     this.layers.forEach((l, i) => {
       l.label.element.querySelector('.ll-name').textContent = info[i][0];

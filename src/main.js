@@ -4,6 +4,7 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 import { FILMS, SIZES, THICKNESS } from './films.js';
 import { Board } from './board.js';
 import { sharedUniforms } from './filmShader.js';
+import { LANGS, getLang, setLang, onLangChange, t, loc, applyI18n } from './i18n.js';
 import { drawNight, drawPastel, canvasTexture, loadImageTexture, coverFit } from './art.js';
 
 const $ = (s) => document.querySelector(s);
@@ -114,7 +115,7 @@ function ensureCompareBoards() {
     const b = new Board({ artTexture, filmId: f.id });
     const el = document.createElement('div');
     el.className = 'compare-label';
-    el.innerHTML = `<div class="cl-cn">${f.cn}</div><div class="cl-en">${f.en}</div>`;
+    el.textContent = loc(f.name);
     b.label = new CSS2DObject(el);
     b.label.center.set(0.5, 0);
     b.group.add(b.label);
@@ -216,22 +217,27 @@ FILMS.forEach((f) => {
   const b = document.createElement('button');
   b.className = 'swatch';
   b.setAttribute('role', 'radio');
-  b.title = `${f.cn} · ${f.en}  (${(f.id + 1) % 10})`;
-  b.innerHTML = `<span class="chip ${f.key}">${CHIP_GLYPH[f.key] || ''}</span><small>${f.cn}</small>`;
+  b.innerHTML = `<span class="chip ${f.key}">${CHIP_GLYPH[f.key] || ''}</span><small></small>`;
   b.addEventListener('click', () => setFilm(f.id));
   swatchWrap.appendChild(b);
 });
+
+function renderSwatchText() {
+  FILMS.forEach((f, i) => {
+    const b = swatchWrap.children[i];
+    b.title = t('swatch.title', { name: loc(f.name), key: (f.id + 1) % 10 });
+    b.querySelector('small').textContent = loc(f.name);
+  });
+}
 
 function setFilm(id) {
   state.film = id;
   main.setFilm(id);
   const f = FILMS[id];
-  $('#film-num').textContent = String(id + 1).padStart(2, '0');
-  $('#film-cn').textContent = f.cn;
-  $('#film-en').textContent = f.en;
-  $('#film-desc').textContent = f.desc;
-  $('#film-desc-en').textContent = f.descEn;
-  $('#film-spec').textContent = f.spec;
+  $('#film-eyebrow').textContent = t('film.eyebrow', { num: String(id + 1).padStart(2, '0'), total: FILMS.length });
+  $('#film-name').textContent = loc(f.name);
+  $('#film-desc').textContent = loc(f.desc);
+  $('#film-spec').textContent = loc(f.spec);
   $('#film-tip').hidden = id < 4;
   [...swatchWrap.children].forEach((el, i) => el.setAttribute('aria-checked', String(i === id)));
   swatchWrap.children[id].scrollIntoView({ block: 'nearest', inline: 'nearest' });
@@ -272,15 +278,16 @@ function segmented(container, items, isActive, onPick) {
     container.innerHTML = '';
     items.forEach((it) => {
       const b = document.createElement('button');
-      b.textContent = it.label;
+      b.textContent = loc(it.label);
       b.setAttribute('aria-pressed', String(isActive(it)));
       b.addEventListener('click', () => { onPick(it); render(); });
       container.appendChild(b);
     });
   };
   render();
+  return render;
 }
-segmented($('#sizes'), SIZES, (s) => s === state.size, (s) => { state.size = s; rebuild(); });
+const renderSizes = segmented($('#sizes'), SIZES, (s) => s === state.size, (s) => { state.size = s; rebuild(); });
 segmented($('#thickness'), THICKNESS.map((t) => ({ t, label: `${t} mm` })), (x) => x.t === state.thickness,
   (x) => { state.thickness = x.t; rebuild(); });
 
@@ -335,6 +342,22 @@ window.addEventListener('keydown', (e) => {
   else if (e.key === 'ArrowLeft') setFilm((state.film + FILMS.length - 1) % FILMS.length);
   else if (e.key === ' ') { e.preventDefault(); setPaused(!state.paused); }
 });
+
+// ---------------------------------------------------------------- UI: language
+const langSelect = $('#lang');
+LANGS.forEach(({ code, label }) => langSelect.add(new Option(label, code)));
+langSelect.addEventListener('change', (e) => setLang(e.target.value));
+
+function applyLang() {
+  langSelect.value = getLang();
+  applyI18n();
+  renderSwatchText();
+  renderSizes();
+  setFilm(state.film);
+  main.updateLabels();
+  if (compareBoards) compareBoards.forEach((b) => { b.label.element.textContent = loc(FILMS[b.filmId].name); });
+}
+onLangChange(applyLang);
 
 // ---------------------------------------------------------------- pointer: cursor light + compare picking
 const pointer = new THREE.Vector2();
@@ -413,11 +436,11 @@ function tick() {
 }
 
 // ---------------------------------------------------------------- boot
-setFilm(0);
+applyLang();
 rebuild();
 resize();
 controls.addEventListener('start', () => { camTween.t = 1; });
 tick();
 
 // Debug / automation hook
-window.__shikishi = { state, setFilm, setExplode, setCompare, setPaused };
+window.__shikishi = { state, setFilm, setExplode, setCompare, setPaused, setLang };
