@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Acrylic Shikishi Preview</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <main id="stage">
+      <header class="brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <div>
+          <div class="brand-name">Acrylic <b>Shikishi</b></div>
+          <div class="brand-sub">亚克力色纸 · surface film preview</div>
+        </div>
+      </header>
+
+      <div id="viewport"></div>
+
+      <div id="compare-hint" class="hint" hidden>Click a board to inspect it</div>
+
+      <nav id="dock" aria-label="Film finishes">
+        <div id="swatches" class="swatches" role="radiogroup"></div>
+        <div class="dock-sep"></div>
+        <button id="btn-explode" class="dock-btn round" title="Exploded layer view (E)" aria-pressed="false">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 12.5 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg>
+        </button>
+        <button id="btn-compare" class="dock-btn" title="Compare all films (C)" aria-pressed="false">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        </button>
+        <button id="btn-pause" class="dock-btn" title="Pause motion (Space)" aria-pressed="false">
+          <svg class="i-pause" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+          <svg class="i-play" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>
+        </button>
+      </nav>
+    </main>
+
+    <aside id="panel">
+      <section class="film-info">
+        <div class="eyebrow"><span id="film-num">01</span> / 10 · Surface film</div>
+        <h1 id="film-cn">亮膜</h1>
+        <div id="film-en" class="film-en">Gloss</div>
+        <p id="film-desc" class="film-desc"></p>
+        <p id="film-desc-en" class="film-desc-en"></p>
+        <div id="film-spec" class="mono"></div>
+        <div id="film-tip" class="tip" hidden>
+          💡 镭射类深色画面出效果更好，浅图闪感会偏弱。<br />
+          <span>Holo films read best over dark artwork. Light images show less sparkle.</span>
+        </div>
+      </section>
+
+      <section>
+        <h2>Artwork</h2>
+        <div id="art-tiles" class="art-tiles">
+          <button data-art="night" class="art-tile" aria-pressed="true"><canvas></canvas><span>Night</span></button>
+          <button data-art="pastel" class="art-tile" aria-pressed="false"><canvas></canvas><span>Pastel</span></button>
+          <label class="art-tile upload" title="Upload an image (or drop it anywhere)">
+            <input id="file" type="file" accept="image/*" hidden />
+            <span class="plus">＋</span><span>Upload</span>
+          </label>
+        </div>
+      </section>
+
+      <section>
+        <h2>Size</h2>
+        <div id="sizes" class="seg"></div>
+      </section>
+
+      <section>
+        <h2>Acrylic thickness</h2>
+        <div id="thickness" class="seg"></div>
+      </section>
+
+      <section>
+        <h2>Lighting</h2>
+        <label class="row switch">
+          <span>Light follows cursor</span>
+          <input id="follow" type="checkbox" />
+          <i></i>
+        </label>
+        <label class="row">
+          <span>Film effect strength</span>
+          <input id="strength" type="range" min="0" max="2" step="0.05" value="1" />
+        </label>
+      </section>
+
+      <section class="keys mono">
+        <div><kbd>1</kbd>–<kbd>0</kbd> film</div>
+        <div><kbd>E</kbd> explode</div>
+        <div><kbd>C</kbd> compare</div>
+        <div><kbd>Space</kbd> pause</div>
+        <div>Drag to orbit · scroll to zoom</div>
+      </section>
+    </aside>
+
+    <div id="drop" hidden><div>Drop image to use as artwork</div></div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
